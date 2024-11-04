@@ -6,7 +6,14 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "format": "prettier . --write",
+    "lint": "npm run lint:script && npm run lint:style",
+    "lint:script": "eslint --cache . --ext .ts,.html",
+    "lint:style": "stylelint components/**/*.less",
+    "lint:fix": "npm run lint-fix:script && npm run lint-fix:style",
+    "lint-fix:script": "npm run lint:script -- --fix",
+    "lint-fix:style": "npm run lint:style -- --fix"
   },
   "private": true,
   "dependencies": {
@@ -18,10 +25,10 @@
     "@angular/platform-browser": "^18.2.0",
     "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
-    "rxjs": "~7.8.0",
     "chart.js": "^4.4.4",
     "ng-zorro-antd": "^18.0.1",
     "ng2-charts": "^6.0.1",
+    "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"
   },
@@ -37,6 +44,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.4.39",
+    "prettier": "3.3.3",
     "tailwindcss": "^3.4.4",
     "typescript": "~5.5.2"
   }

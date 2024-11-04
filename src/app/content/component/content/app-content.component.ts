@@ -1,24 +1,36 @@
-import {Component, inject, OnInit} from '@angular/core';
-import {ChartData, ChartOptions} from 'chart.js';
+import { Component, inject, OnInit } from '@angular/core';
+import { ChartData, ChartOptions } from 'chart.js';
 import Chart from 'chart.js/auto';
-import {BaseChartDirective} from 'ng2-charts';
-import {DailyRate} from '../../entity/content.entity';
-import {ContentService} from '../../data-access/content.service';
-import {NzTypographyModule} from 'ng-zorro-antd/typography';
-import {DecimalPipe} from '@angular/common';
-import {NzTableModule} from 'ng-zorro-antd/table';
-import {NzToolTipModule} from 'ng-zorro-antd/tooltip';
-import {NzDatePickerModule} from 'ng-zorro-antd/date-picker';
-import {FormsModule} from '@angular/forms';
+import { BaseChartDirective } from 'ng2-charts';
+import { DailyRate } from '../../entity/content.entity';
+import { ContentService } from '../../data-access/content.service';
+import { NzTypographyModule } from 'ng-zorro-antd/typography';
+import { DecimalPipe } from '@angular/common';
+import { NzTableModule } from 'ng-zorro-antd/table';
+import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { FormsModule } from '@angular/forms';
 
 Chart.defaults.font.family = 'Vazirmatn';
 
 @Component({
   selector: 'app-content',
   standalone: true,
-  imports: [BaseChartDirective, NzTypographyModule, NzTableModule, NzToolTipModule, NzDatePickerModule, DecimalPipe, FormsModule],
+  imports: [
+    BaseChartDirective,
+    NzTypographyModule,
+    NzTableModule,
+    NzToolTipModule,
+    NzDatePickerModule,
+    DecimalPipe,
+    FormsModule
+  ],
   templateUrl: './app-content.component.html',
-  styles: `:host { @apply container; }`
+  styles: `
+    :host {
+      @apply container;
+    }
+  `
 })
 export class AppContentComponent implements OnInit {
   private readonly contentService = inject(ContentService);
@@ -49,7 +61,7 @@ export class AppContentComponent implements OnInit {
         display: true,
         title: {
           display: false,
-          text: 'تاریخ',
+          text: 'تاریخ'
         },
         bounds: 'data',
         clip: false
@@ -58,23 +70,25 @@ export class AppContentComponent implements OnInit {
         display: true,
         title: {
           display: false,
-          text: 'قیمت',
-        },
+          text: 'قیمت'
+        }
       }
     }
   };
 
   ngOnInit(): void {
-    this.fetchData().then((rates) => this.initializeChart(rates))
+    this.fetchData().then(rates => this.initializeChart(rates));
   }
 
   initializeChart(dailyRates: DailyRate[]) {
     this.metrics = this.calculateMetrics(dailyRates);
-    const labels = dailyRates.map(dailyRate => {
-      const date = new Date(dailyRate.date);
-      return this.formatter.format(date);
-    }).reverse();
-    const price: number[] = dailyRates.map((dailyRate) => dailyRate.price).reverse();
+    const labels = dailyRates
+      .map(dailyRate => {
+        const date = new Date(dailyRate.date);
+        return this.formatter.format(date);
+      })
+      .reverse();
+    const price: number[] = dailyRates.map(dailyRate => dailyRate.price).reverse();
     this.data = {
       labels,
       datasets: [
@@ -133,6 +147,6 @@ export class AppContentComponent implements OnInit {
   }
 
   private fetchData(): Promise<DailyRate[]> {
-    return this.contentService.getExchangeRates()
+    return this.contentService.getExchangeRates();
   }
 }
