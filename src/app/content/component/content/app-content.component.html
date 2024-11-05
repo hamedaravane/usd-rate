@@ -2,7 +2,7 @@
   <h1 nz-typography>شاخص‌های نرخ دلار آمریکا</h1>
   <br />
   <div class="max-w-screen-md">
-    <nz-range-picker [(ngModel)]="date" (ngModelChange)="onChange($event)"></nz-range-picker>
+    <nz-range-picker [(ngModel)]="date" (ngModelChange)="onDatePickerChange($event)"></nz-range-picker>
   </div>
   <br />
   <div class="max-w-screen-md">
@@ -11,209 +11,251 @@
   <br />
   <div class="max-w-screen-md">
     <nz-table [nzData]="[].constructor(10)" [nzShowPagination]="false">
-      <thead>
+        <thead>
         <tr>
           <th>شاخص</th>
           <th>فرمول محاسبه</th>
-          <th>نتیجه (تومان)</th>
+          <th>نتیجه</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         <tr>
+          <td>تعداد روزهای بازه</td>
+          <td><math>
+            <mi>n</mi>
+          </math></td>
+          <td>{{ metrics().days | number: '1.0-0' }}</td>
+        </tr>
+        <tr>
+          <td>کمترین قیمت</td>
+          <td><math>
+            <mo>min</mo>
+            <mo>(</mo>
+            <mi>prices</mi>
+            <mo>)</mo>
+          </math></td>
+          <td>{{ metrics().minPrice | number: '1.0-0' }}</td>
+        </tr>
+        <tr>
+          <td>بیشترین قیمت</td>
+          <td><math>
+            <mo>max</mo>
+            <mo>(</mo>
+            <mi>prices</mi>
+            <mo>)</mo>
+          </math></td>
+          <td>{{ metrics().maxPrice | number: '1.0-0' }}</td>
+        </tr>
+        <tr>
+          <td>میانه قیمت‌ها</td>
           <td>
-            <span
-              nz-tooltip
-              nzTooltipTitle="این شاخص نشان می‌دهد که به طور میانگین، قیمت یک دلار در بازه زمانی مشخص چقدر بوده است. میانگین به ما دید کلی از روند قیمت می‌دهد."
-              >میانگین قیمت</span
-            >
-          </td>
-          <td>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
-              <mfrac>
-                <mo>&sum;</mo>
-                <mi>Price</mi>
-                <mi>i</mi>
-              </mfrac>
-              <mo>/</mo>
-              <mi>n</mi>
+            <math>
+              <mo>median</mo>
+              <mo>(</mo>
+              <mi>prices</mi>
+              <mo>)</mo>
             </math>
           </td>
-          <td>{{ metrics.meanPrice | number: '1.0-0' }}</td>
+          <td>{{ metrics().medianPrice | number: '1.0-0' }}</td>
         </tr>
         <tr>
+          <td>میانگین قیمت</td>
           <td>
-            <span
-              nz-tooltip
-              nzTooltipTitle="انحراف معیار میزان نوسان قیمت‌ها نسبت به میانگین را نشان می‌دهد. انحراف معیار بالا یعنی قیمت‌ها خیلی تغییر کرده‌اند و انحراف معیار پایین یعنی قیمت‌ها نزدیک به میانگین هستند."
-              >انحراف معیار قیمت</span
-            >
+            <math>
+              <mfrac>
+                <mrow>
+                  <mo>&#8721;</mo>
+                  <mi>prices</mi>
+                </mrow>
+                <mi>n</mi>
+              </mfrac>
+            </math>
           </td>
+          <td>{{ metrics().avgPrice | number: '1.0-0' }}</td>
+        </tr>
+        <tr>
+          <td>انحراف معیار</td>
           <td>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <math>
               <msqrt>
                 <mfrac>
-                  <mn>1</mn>
+                  <mrow>
+                    <mo>&#8721;</mo>
+                    <msup>
+                      <mrow>
+                        <mi>price</mi>
+                        <mo>-</mo>
+                        <mi>avg</mi>
+                      </mrow>
+                      <mn>2</mn>
+                    </msup>
+                  </mrow>
                   <mi>n</mi>
                 </mfrac>
-                <mo>&sum;</mo>
-                <msub>
-                  <mi>i</mi>
-                  <mrow>
-                    <mo>=</mo>
-                    <mn>1</mn>
-                  </mrow>
-                </msub>
-                <msup>
-                  <mrow>
-                    <mo>(</mo>
-                    <msub>
-                      <mi>Price</mi>
-                      <mi>i</mi>
-                    </msub>
-                    <mo>−</mo>
-                    <mi>Mean Price</mi>
-                    <mo>)</mo>
-                  </mrow>
-                  <mn>2</mn>
-                </msup>
               </msqrt>
             </math>
           </td>
-          <td>{{ metrics.priceStandardDeviation | number: '1.0-0' }}</td>
+          <td>{{ metrics().stdDev | number: '1.0-0' }}</td>
         </tr>
         <tr>
+          <td>میانگین تغییرات روزانه</td>
           <td>
-            <span
-              nz-tooltip
-              nzTooltipTitle="واریانس نیز مانند انحراف معیار میزان پراکندگی قیمت‌ها را نسبت به میانگین اندازه‌گیری می‌کند، ولی در واحد مربع. این شاخص برای تحلیل‌های آماری کاربرد دارد."
-              >واریانس قیمت</span
-            >
-          </td>
-          <td>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <math>
               <mfrac>
-                <mn>1</mn>
+                <mrow>
+                  <mo>&#8721;</mo>
+                  <mi>&#x394; daily</mi>
+                </mrow>
                 <mi>n</mi>
               </mfrac>
-              <mo>&sum;</mo>
-              <msup>
+            </math>
+          </td>
+          <td>{{ metrics().dailyChanges | number: '1.0-0' }}</td>
+        </tr>
+        <tr>
+          <td>میانگین تغییرات ماهانه</td>
+          <td>
+            <math>
+              <mfrac>
                 <mrow>
-                  <mo>(</mo>
-                  <msub>
-                    <mi>Price</mi>
-                    <mi>i</mi>
-                  </msub>
-                  <mo>−</mo>
-                  <mi>Mean</mi>
-                  <mo>&nbsp;</mo>
-                  <mi>Price</mi>
-                  <mo>)</mo>
+                  <mo>&#8721;</mo>
+                  <mi>&#x394; monthly</mi>
                 </mrow>
-                <mn>2</mn>
-              </msup>
-            </math>
-          </td>
-          <td>{{ metrics.priceVariance | number: '1.0-0' }}</td>
-        </tr>
-        <tr>
-          <td>
-            <span
-              nz-tooltip
-              nzTooltipTitle="این شاخص میانگین کمترین قیمت‌هایی است که در هر روز ثبت شده‌اند و به ما نمایی از کف قیمتی در بازه مورد نظر می‌دهد."
-              >میانگین حداقل قیمت</span
-            >
-          </td>
-          <td>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
-              <mfrac>
-                <mo>&sum;</mo>
-                <msub>
-                  <mi>Low</mi>
-                  <mi>i</mi>
-                </msub>
+                <mi>n</mi>
               </mfrac>
-              <mo>/</mo>
-              <mi>n</mi>
             </math>
           </td>
-          <td>{{ metrics.meanLow | number: '1.0-0' }}</td>
+          <td>{{ metrics().monthlyChanges | number: '1.0-0' }}</td>
         </tr>
         <tr>
+          <td>میانگین تغییرات سالیانه</td>
           <td>
-            <span
-              nz-tooltip
-              nzTooltipTitle="این شاخص میانگین بیشترین قیمت‌هایی است که در هر روز ثبت شده‌اند و به ما نمایی از سقف قیمتی در بازه مورد نظر می‌دهد."
-              >میانگین حداکثر قیمت</span
-            >
-          </td>
-          <td>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
-              <mfrac>
-                <mo>&sum;</mo>
-                <msub>
-                  <mi>High</mi>
-                  <mi>i</mi>
-                </msub>
-              </mfrac>
-              <mo>/</mo>
-              <mi>n</mi>
-            </math>
-          </td>
-          <td>{{ metrics.meanHigh | number: '1.0-0' }}</td>
-        </tr>
-        <tr>
-          <td>
-            <span
-              nz-tooltip
-              nzTooltipTitle="این شاخص میانگین تغییرات قیمت در هر روز را نشان می‌دهد و به ما کمک می‌کند نوسانات روزانه قیمت را بررسی کنیم."
-              >میانگین تغییرات روزانه قیمت</span
-            >
-          </td>
-          <td>
-            <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <math>
               <mfrac>
                 <mrow>
-                  <mo>&sum;</mo>
+                  <mo>&#8721;</mo>
+                  <mi>&#x394; yearly</mi>
+                </mrow>
+                <mi>n</mi>
+              </mfrac>
+            </math>
+          </td>
+          <td>{{ metrics().yearlyChanges | number: '1.0-0' }}</td>
+        </tr>
+        <tr>
+          <td>نرخ افزایش قیمت در کل بازه</td>
+          <td>
+            <math>
+              <mrow>
+                <mfrac>
                   <mrow>
-                    <mo>(</mo>
-                    <msub>
-                      <mi>Price</mi>
-                      <mi>i</mi>
-                    </msub>
-                    <mo>−</mo>
-                    <msub>
-                      <mi>Price</mi>
-                      <mrow>
-                        <mi>i</mi>
-                        <mo>−</mo>
-                        <mn>1</mn>
-                      </mrow>
-                    </msub>
-                    <mo>)</mo>
+                    <mi>price</mi>
+                    <mo>(n)</mo>
+                    <mo>-</mo>
+                    <mi>price</mi>
+                    <mo>(1)</mo>
                   </mrow>
-                </mrow>
-                <mrow>
-                  <mi>n</mi>
-                  <mo>−</mo>
-                  <mn>1</mn>
-                </mrow>
-              </mfrac>
+                  <mi>price</mi>
+                  <mo>(1)</mo>
+                </mfrac>
+                <mo>&#215;</mo>
+                <mn>100</mn>
+              </mrow>
             </math>
           </td>
-          <td>{{ metrics.averageDailyChange | number: '1.0-0' }}</td>
+          <td>{{ metrics().overallGrowthRate | number: '1.0-2' }}%</td>
         </tr>
         <tr>
+          <td>نرخ رشد روزانه</td>
           <td>
-            <span
-              nz-tooltip
-              nzTooltipTitle="بیشترین تغییری که قیمت از یک روز به روز دیگر داشته است. این شاخص نشان‌دهنده بیشترین نوسان روزانه در بازه زمانی است."
-              >حداکثر تغییرات روزانه قیمت</span
-            >
+            <math>
+              <mrow>
+                <msup>
+                  <mfrac>
+                    <mi>price</mi>
+                    <mo>(n)</mo>
+                    <mi>price</mi>
+                    <mo>(1)</mo>
+                  </mfrac>
+                  <mfrac>
+                    <mn>1</mn>
+                    <mi>days</mi>
+                  </mfrac>
+                </msup>
+                <mo>-</mo>
+                <mn>1</mn>
+                <mo>&#215;</mo>
+                <mn>100</mn>
+              </mrow>
+            </math>
           </td>
-          <td></td>
-          <td>{{ metrics.maxDailyChange | number: '1.0-0' }}</td>
+          <td>{{ metrics().dailyGrowthRate | number: '1.0-2' }}%</td>
         </tr>
-      </tbody>
+        <tr>
+          <td>نرخ رشد ماهیانه</td>
+          <td>
+            <math>
+              <mrow>
+                <msup>
+                  <mfrac>
+                    <mi>price</mi>
+                    <mo>(n)</mo>
+                    <mi>price</mi>
+                    <mo>(1)</mo>
+                  </mfrac>
+                  <mfrac>
+                    <mn>1</mn>
+                    <mrow>
+                      <mi>days</mi>
+                      <mo>/</mo>
+                      <mn>30</mn>
+                    </mrow>
+                  </mfrac>
+                </msup>
+                <mo>-</mo>
+                <mn>1</mn>
+                <mo>&#215;</mo>
+                <mn>100</mn>
+              </mrow>
+            </math>
+          </td>
+          <td>{{ metrics().monthlyGrowthRate | number: '1.0-2' }}%</td>
+        </tr>
+        <tr>
+          <td>نرخ رشد سالیانه</td>
+          <td>
+            <math>
+              <mrow>
+                <msup>
+                  <mfrac>
+                    <mi>price</mi>
+                    <mo>(n)</mo>
+                    <mi>price</mi>
+                    <mo>(1)</mo>
+                  </mfrac>
+                  <mfrac>
+                    <mn>1</mn>
+                    <mrow>
+                      <mi>days</mi>
+                      <mo>/</mo>
+                      <mn>365</mn>
+                    </mrow>
+                  </mfrac>
+                </msup>
+                <mo>-</mo>
+                <mn>1</mn>
+                <mo>&#215;</mo>
+                <mn>100</mn>
+              </mrow>
+            </math>
+          </td>
+          <td>{{ metrics().yearlyGrowthRate | number: '1.0-2' }}%</td>
+        </tr>
+        </tbody>
     </nz-table>
+    <br>
+    @if (date) {
+      <p>برای درک بهتر ارزش پول در این بازه، فرض کنید شما در تاریخ {{ formatter.format(date[0]) }} مبلغ <input class="max-w-28" nz-input [ngModel]="initialValue()" (ngModelChange)="initialValue.set($event)"> تومان داشتید. با گذشت زمان و در انتهای بازه در تاریخ {{ formatter.format(date[1]) }}، ارزش پول شما به {{ adjustedValue() | number: '1.0-0' }} تومان رسیده است.</p>
+    }
   </div>
 </main>
