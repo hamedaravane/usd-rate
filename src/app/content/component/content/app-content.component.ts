@@ -34,12 +34,7 @@ interface Metrics {
   selector: 'app-content',
   standalone: true,
   imports: [BaseChartDirective, NzTypographyModule, NzTableModule, NzInputModule, NzToolTipModule, NzDatePickerModule, DecimalPipe, FormsModule],
-  templateUrl: './app-content.component.html',
-  styles: `
-    :host {
-      @apply container;
-    }
-  `
+  templateUrl: './app-content.component.html'
 })
 export class AppContentComponent implements AfterViewInit {
   private readonly contentService = inject(ContentService);
